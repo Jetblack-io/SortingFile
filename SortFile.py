@@ -9,48 +9,50 @@ import socket
 import sys
 
 
-def Sortig():
-    os.system('chcp 1251')
+def CreateDerictory():
     #Search derictory Dowloads for sorting files
     work_path = os.getenv('USERPROFILE')
     work_path += '\\Downloads'
     os.chdir(work_path)
     #Declared a derictoriy for sotring files
     name_folder = [
-        'Архив', 'цукцук', 'test', 'йцукйцу', 'Torrent-File'
+        'Архив', 'Картинки', 'Программы', 'Документы', 'Torrent-File'
     ]
     for name in name_folder:
         if not os.path.isdir(name):
             os.mkdir(name)
-        imag = ['jpg', 'bmp', 'png', 'ico', 'JPG', 'jpeg', 'psd']
-        programm = ['exe', 'msi']
-        arhiv = ['7z', '7zip', 'rar', 'tar', 'zip', 'gz', 'tgz', 'z']
-        doc_type = ['doc', 'pdf', 'svg', 'xml', 'txt']
-        other = ['torrent']
-        for filenames in os.listdir():
-            searchlist = filenames.rfind('.', 0, len(filenames))
-            name = filenames[searchlist + 1:]
-            name.lower()
-            for prefix in imag:
-                if name == prefix:
-                    os.replace(filenames, 'Архив//' + filenames)
-            for prefix in programm:
-                if name == prefix:
-                    os.replace(filenames, 'укуцу//'+filenames)
-            for prefix in arhiv:
-                if name == prefix:
-                    os.replace(filenames, 'РђСЂС…РёРІС‹//' + filenames)
-            for prefix in doc_type:
-                if name == prefix:
-                    os.replace(filenames, 'еуые//' + filenames)
-            for prefix in other:
-                if name == prefix:
-                    os.replace(filenames, 'Torrent-File//' + filenames)
+
+
+def Sortig():
+    imag = ['jpg', 'bmp', 'png', 'ico', 'JPG', 'jpeg', 'psd']
+    programm = ['exe', 'msi']
+    arhiv = ['7z', '7zip', 'rar', 'tar', 'zip', 'gz', 'tgz', 'z']
+    doc_type = ['doc', 'pdf', 'svg', 'xml', 'txt']
+    other = ['torrent']
+    for filenames in os.listdir():
+        searchlist = filenames.rfind('.', 0, len(filenames))
+        name = filenames[searchlist + 1:]
+        name.lower()
+        for prefix in imag:
+            if name == prefix:
+                os.replace(filenames, 'Картинки//' + filenames)
+        for prefix in programm:
+            if name == prefix:
+                os.replace(filenames, 'Программы//' + filenames)
+        for prefix in arhiv:
+            if name == prefix:
+                os.replace(filenames, 'Архив//' + filenames)
+        for prefix in doc_type:
+            if name == prefix:
+                os.replace(filenames, 'Документы//' + filenames)
+        for prefix in other:
+            if name == prefix:
+                os.replace(filenames, 'Torrent-File//' + filenames)
 
 
 class DataTransToMongoService(win32serviceutil.ServiceFramework):
-    _svc_name_ = 'DataTransToMongoService'
-    _svc_display_name_ = 'DataTransToMongoService'
+    _svc_name_ = 'File-Sorting'
+    _svc_display_name_ = 'File-Sorting'
 
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
@@ -65,21 +67,22 @@ class DataTransToMongoService(win32serviceutil.ServiceFramework):
     def SvcDoRun(self):
         self.isAlive = True
         servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
-                              servicemanager.PYS_SERVICE_STARTED, (self._svc_name_, ''))
+                              servicemanager.PYS_SERVICE_STARTED,
+                              (self._svc_name_, ''))
         self.main()
         win32event.WaitForSingleObject(self.hWaitStop, win32event.INFINITE)
 
     def main(self):
         #i = 0
+        os.system('chcp 866')
+        CreateDerictory()
         while self.isAlive:
+#            try:
             Sortig()
-            time.sleep(86400)
+#            except Exception as e:
+#                pass
+            time.sleep(30)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        servicemanager.Initialize()
-        servicemanager.PrepareToHostSingle(DataTransToMongoService)
-        servicemanager.StartServiceCtrlDispatcher()
-    else:
-        win32serviceutil.HandleCommandLine(DataTransToMongoService)
+    win32serviceutil.HandleCommandLine(DataTransToMongoService)
