@@ -1,12 +1,9 @@
 import os
-import pythoncom
 import time
 import win32serviceutil
 import win32service
 import win32event
 import servicemanager
-import socket
-import sys
 
 
 def CreateDerictory():
@@ -50,9 +47,11 @@ def Sortig():
                 os.replace(filenames, 'Torrent-File//' + filenames)
 
 
-class DataTransToMongoService(win32serviceutil.ServiceFramework):
+class ServiceSorting(win32serviceutil.ServiceFramework):
     _svc_name_ = 'File-Sorting'
-    _svc_display_name_ = 'File-Sorting'
+    _svc_display_name_ = 'Служба сортировки файлов'
+    _svc_description_ = 'Python Service sorting file rof directory USER/Downloads'
+
 
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
@@ -69,11 +68,10 @@ class DataTransToMongoService(win32serviceutil.ServiceFramework):
         servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
                               servicemanager.PYS_SERVICE_STARTED,
                               (self._svc_name_, ''))
-        self.main()
         win32event.WaitForSingleObject(self.hWaitStop, win32event.INFINITE)
+        self.main()
 
     def main(self):
-        #i = 0
         os.system('chcp 866')
         CreateDerictory()
         while self.isAlive:
@@ -85,4 +83,4 @@ class DataTransToMongoService(win32serviceutil.ServiceFramework):
 
 
 if __name__ == '__main__':
-    win32serviceutil.HandleCommandLine(DataTransToMongoService)
+    win32serviceutil.HandleCommandLine(ServiceSorting)
